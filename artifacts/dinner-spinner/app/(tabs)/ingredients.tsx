@@ -136,8 +136,8 @@ export default function IngredientsScreen() {
   const inputBg = isDark ? "#2C2C2E" : Colors.surface;
   const inputBorder = isDark ? "#3A3A3C" : Colors.border;
 
-  const topPad = Platform.OS === "web" ? 67 : insets.top;
-  const bottomPad = Platform.OS === "web" ? 34 + 84 : insets.bottom + 84;
+  const topPad = Platform.OS === "web" ? 16 : insets.top;
+  const bottomPad = Platform.OS === "web" ? 84 : insets.bottom + 84;
 
   const handleAdd = () => {
     const val = inputText.trim();
