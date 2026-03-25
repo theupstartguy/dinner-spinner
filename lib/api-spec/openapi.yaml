@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: fridge
+    description: Fridge scanning operations
 paths:
   /healthz:
     get:
@@ -24,6 +26,37 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /analyze-fridge:
+    post:
+      operationId: analyzeFridge
+      tags: [fridge]
+      summary: Analyze fridge image
+      description: Analyzes a fridge/pantry image using AI vision and returns detected ingredients
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnalyzeFridgeRequest"
+      responses:
+        "200":
+          description: Ingredients detected
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzeFridgeResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +66,32 @@ components:
           type: string
       required:
         - status
-
+    AnalyzeFridgeRequest:
+      type: object
+      properties:
+        imageBase64:
+          type: string
+          description: Base64 encoded image data (without data URL prefix)
+        mimeType:
+          type: string
+          description: MIME type of the image (e.g. image/jpeg)
+      required:
+        - imageBase64
+        - mimeType
+    AnalyzeFridgeResponse:
+      type: object
+      properties:
+        ingredients:
+          type: array
+          items:
+            type: string
+          description: List of detected ingredient names
+      required:
+        - ingredients
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error

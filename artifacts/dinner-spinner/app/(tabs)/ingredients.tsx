@@ -1,5 +1,6 @@
 import { Feather, Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
+import { router } from "expo-router";
 import React, { useRef, useState } from "react";
 import {
   Alert,
@@ -178,11 +179,23 @@ export default function IngredientsScreen() {
               : "Add what's in your fridge"}
           </Text>
         </View>
-        {ingredients.length > 0 && (
-          <Pressable onPress={handleClear} style={styles.clearBtn}>
-            <Feather name="trash-2" size={20} color={Colors.accent} />
+        <View style={styles.headerActions}>
+          <Pressable
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              router.push("/scan-fridge");
+            }}
+            style={[styles.scanBtn, { backgroundColor: Colors.primary + "18", borderColor: Colors.primary + "44" }]}
+          >
+            <Feather name="camera" size={18} color={Colors.primary} />
+            <Text style={[styles.scanBtnText, { color: Colors.primary }]}>Scan</Text>
           </Pressable>
-        )}
+          {ingredients.length > 0 && (
+            <Pressable onPress={handleClear} style={styles.clearBtn}>
+              <Feather name="trash-2" size={20} color={Colors.accent} />
+            </Pressable>
+          )}
+        </View>
       </View>
 
       <View
@@ -297,12 +310,30 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_400Regular",
     marginTop: 2,
   },
+  headerActions: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginTop: 4,
+  },
+  scanBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+  },
+  scanBtnText: {
+    fontSize: 14,
+    fontFamily: "Inter_600SemiBold",
+  },
   clearBtn: {
     width: 40,
     height: 40,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 4,
   },
   inputContainer: {
     flexDirection: "row",

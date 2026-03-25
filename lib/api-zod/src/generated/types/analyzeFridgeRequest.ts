@@ -5,22 +5,10 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-export interface HealthStatus {
-  status: string;
-}
 
 export interface AnalyzeFridgeRequest {
   /** Base64 encoded image data (without data URL prefix) */
   imageBase64: string;
   /** MIME type of the image (e.g. image/jpeg) */
   mimeType: string;
-}
-
-export interface AnalyzeFridgeResponse {
-  /** List of detected ingredient names */
-  ingredients: string[];
-}
-
-export interface ErrorResponse {
-  error: string;
 }

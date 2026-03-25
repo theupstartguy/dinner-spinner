@@ -14,3 +14,20 @@ import * as zod from "zod";
 export const HealthCheckResponse = zod.object({
   status: zod.string(),
 });
+
+/**
+ * Analyzes a fridge/pantry image using AI vision and returns detected ingredients
+ * @summary Analyze fridge image
+ */
+export const AnalyzeFridgeBody = zod.object({
+  imageBase64: zod
+    .string()
+    .describe("Base64 encoded image data (without data URL prefix)"),
+  mimeType: zod.string().describe("MIME type of the image (e.g. image\/jpeg)"),
+});
+
+export const AnalyzeFridgeResponse = zod.object({
+  ingredients: zod
+    .array(zod.string())
+    .describe("List of detected ingredient names"),
+});

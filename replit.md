@@ -4,6 +4,15 @@
 
 pnpm workspace monorepo using TypeScript. Each package manages its own dependencies.
 
+## Apps
+
+### Dinner Spinner (`artifacts/dinner-spinner`)
+- Expo React Native mobile app
+- Tab 1 (Spin): Animated spinner wheel → suggests meals based on ingredients via TheMealDB API
+- Tab 2 (Ingredients): Add ingredients manually or tap "Scan" to take/upload a fridge photo
+- Fridge scan uses AI vision (OpenAI) via backend → detects ingredients → user reviews before adding
+- Recipe detail screen: ingredients list, instructions, YouTube video link
+
 ## Stack
 
 - **Monorepo tool**: pnpm workspaces
@@ -15,6 +24,7 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 - **Validation**: Zod (`zod/v4`), `drizzle-zod`
 - **API codegen**: Orval (from OpenAPI spec)
 - **Build**: esbuild (CJS bundle)
+- **AI**: OpenAI via Replit AI Integrations (vision for fridge scanning)
 
 ## Structure
 

@@ -5,18 +5,26 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
+  MutationFunction,
   QueryFunction,
   QueryKey,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult,
 } from "@tanstack/react-query";
 
-import type { HealthStatus } from "./api.schemas";
+import type {
+  AnalyzeFridgeRequest,
+  AnalyzeFridgeResponse,
+  ErrorResponse,
+  HealthStatus,
+} from "./api.schemas";
 
 import { customFetch } from "../custom-fetch";
-import type { ErrorType } from "../custom-fetch";
+import type { ErrorType, BodyType } from "../custom-fetch";
 
 type AwaitedInput<T> = PromiseLike<T> | T;
 
@@ -99,3 +107,90 @@ export function useHealthCheck<
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+/**
+ * Analyzes a fridge/pantry image using AI vision and returns detected ingredients
+ * @summary Analyze fridge image
+ */
+export const getAnalyzeFridgeUrl = () => {
+  return `/api/analyze-fridge`;
+};
+
+export const analyzeFridge = async (
+  analyzeFridgeRequest: AnalyzeFridgeRequest,
+  options?: RequestInit,
+): Promise<AnalyzeFridgeResponse> => {
+  return customFetch<AnalyzeFridgeResponse>(getAnalyzeFridgeUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(analyzeFridgeRequest),
+  });
+};
+
+export const getAnalyzeFridgeMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof analyzeFridge>>,
+    TError,
+    { data: BodyType<AnalyzeFridgeRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof analyzeFridge>>,
+  TError,
+  { data: BodyType<AnalyzeFridgeRequest> },
+  TContext
+> => {
+  const mutationKey = ["analyzeFridge"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof analyzeFridge>>,
+    { data: BodyType<AnalyzeFridgeRequest> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return analyzeFridge(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type AnalyzeFridgeMutationResult = NonNullable<
+  Awaited<ReturnType<typeof analyzeFridge>>
+>;
+export type AnalyzeFridgeMutationBody = BodyType<AnalyzeFridgeRequest>;
+export type AnalyzeFridgeMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Analyze fridge image
+ */
+export const useAnalyzeFridge = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof analyzeFridge>>,
+    TError,
+    { data: BodyType<AnalyzeFridgeRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof analyzeFridge>>,
+  TError,
+  { data: BodyType<AnalyzeFridgeRequest> },
+  TContext
+> => {
+  return useMutation(getAnalyzeFridgeMutationOptions(options));
+};
