@@ -1,0 +1,27 @@
+kind = "mobile"
+previewPath = "/"
+title = "Dinner Spinner"
+version = "1.0.0"
+id = "artifacts/dinner-spinner"
+router = "expo-domain"
+
+[[integratedSkills]]
+name = "expo"
+version = "1.0.0"
+
+[[services]]
+ensurePreviewReachable = "/status"
+name = "expo"
+paths = [ "/" ]
+localPort = 19134
+
+[services.development]
+run = "pnpm --filter @workspace/dinner-spinner run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/dinner-spinner", "run", "build" ]
+run = [ "pnpm", "--filter", "@workspace/dinner-spinner", "run", "serve" ]
+
+[services.env]
+PORT = "19134"
+BASE_PATH = "/"

@@ -1,0 +1,32 @@
+const Colors = {
+  primary: "#FF6B35",
+  primaryLight: "#FF8C5A",
+  primaryDark: "#E5551F",
+  accent: "#E84855",
+  background: "#FAFAF8",
+  backgroundDark: "#F0EDE8",
+  surface: "#FFFFFF",
+  surfaceDark: "#F5F2EE",
+  text: "#1C1C1E",
+  textSecondary: "#6B6B6B",
+  textLight: "#A0A0A0",
+  border: "#E8E4E0",
+  card: "#FFFFFF",
+  success: "#34C759",
+  warning: "#FF9F0A",
+  tint: "#FF6B35",
+  tabIconDefault: "#C0B9B0",
+  tabIconSelected: "#FF6B35",
+  spinnerColors: [
+    "#FF6B35",
+    "#E84855",
+    "#F7B731",
+    "#20BF6B",
+    "#3867D6",
+    "#8854D0",
+    "#FC5C65",
+    "#45AAF2",
+  ],
+};
+
+export default Colors;
