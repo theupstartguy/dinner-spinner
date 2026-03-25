@@ -257,7 +257,7 @@ export default function IngredientsScreen() {
 
             {ingredients.length === 0 && (
               <View style={styles.emptyState}>
-                <Feather name="shopping-basket" size={48} color={Colors.border} />
+                <Feather name="shopping-bag" size={48} color={Colors.border} />
                 <Text style={[styles.emptyTitle, { color: textColor }]}>
                   No ingredients yet
                 </Text>

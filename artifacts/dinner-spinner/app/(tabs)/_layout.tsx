@@ -83,7 +83,7 @@ function ClassicTabLayout() {
             isIOS ? (
               <SymbolView name="basket.fill" tintColor={color} size={24} />
             ) : (
-              <Feather name="shopping-basket" size={22} color={color} />
+              <Feather name="shopping-bag" size={22} color={color} />
             ),
         }}
       />
