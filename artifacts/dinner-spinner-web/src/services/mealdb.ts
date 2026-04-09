@@ -182,11 +182,24 @@ function hasMeatIngredient(meal: Meal) {
 function buildSuggestedIngredients(ingredients: string[], meals: Meal[]): string[] {
   const counts = new Map<string, number>();
   const fridge = new Set(ingredients.map(normalizeIngredient));
+  const ignore = new Set([
+    "salt",
+    "pepper",
+    "water",
+    "oil",
+    "olive oil",
+    "vegetable oil",
+    "butter",
+    "garlic",
+    "onion",
+    "flour",
+    "sugar",
+  ]);
 
   for (const meal of meals) {
     for (const { ingredient } of getMealIngredients(meal)) {
       const normalized = normalizeIngredient(ingredient);
-      if (!normalized || fridge.has(normalized)) continue;
+      if (!normalized || fridge.has(normalized) || ignore.has(normalized)) continue;
       counts.set(normalized, (counts.get(normalized) ?? 0) + 1);
     }
   }
@@ -194,14 +207,13 @@ function buildSuggestedIngredients(ingredients: string[], meals: Meal[]): string
   return [...counts.entries()]
     .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
     .slice(0, 4)
-    .map(([ingredient]) => ingredient);
+    .map(([ingredient]) => ingredient.replace(/\b\w/g, (match) => match.toUpperCase()));
 }
 
 export async function getMealSuggestions(ingredients: string[]): Promise<MealSuggestionResult> {
   const candidateMeals = await getMealsMatchingFridgeIngredients(ingredients);
   const detailedMeals = await Promise.all(candidateMeals.map((meal) => getMealById(meal.idMeal)));
   const meals = detailedMeals.filter((meal): meal is Meal => !!meal);
-  const hasMeat = meals.some(hasMeatIngredient);
   const isVegetarianOnly = !ingredients.some((ingredient) =>
     [
       "chicken",
@@ -225,9 +237,10 @@ export async function getMealSuggestions(ingredients: string[]): Promise<MealSug
   );
 
   const filteredMeals = isVegetarianOnly ? meals.filter((meal) => !hasMeatIngredient(meal)) : meals;
+  const suggestionMeals = filteredMeals.length > 0 ? filteredMeals : meals;
   return {
     meals: filteredMeals.map((meal) => ({ idMeal: meal.idMeal, strMeal: meal.strMeal, strMealThumb: meal.strMealThumb })),
-    suggestedIngredients: buildSuggestedIngredients(ingredients, filteredMeals),
+    suggestedIngredients: buildSuggestedIngredients(ingredients, suggestionMeals),
     isVegetarianOnly,
   };
 }
