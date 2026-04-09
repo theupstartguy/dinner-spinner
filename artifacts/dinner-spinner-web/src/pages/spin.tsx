@@ -3,13 +3,15 @@ import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import SpinnerWheel from "@/components/SpinnerWheel";
 import { useIngredients } from "@/context/IngredientsContext";
-import { getMealsMatchingFridgeIngredients, MealSummary } from "@/services/mealdb";
-import { Clock3, Heart, Leaf } from "lucide-react";
+import { getMealSuggestions, MealSummary } from "@/services/mealdb";
+import { Clock3, Heart, Leaf, Plus } from "lucide-react";
 
 export default function SpinPage() {
   const { ingredients } = useIngredients();
   const [, navigate] = useLocation();
   const [meals, setMeals] = useState<MealSummary[]>([]);
+  const [suggestedIngredients, setSuggestedIngredients] = useState<string[]>([]);
+  const [vegetarianOnly, setVegetarianOnly] = useState(false);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<MealSummary | null>(null);
   const [mealsLoaded, setMealsLoaded] = useState(false);
@@ -18,10 +20,12 @@ export default function SpinPage() {
     if (mealsLoaded && !force) return meals;
     setLoading(true);
     try {
-      const fetched = await getMealsMatchingFridgeIngredients(ingredients);
-      setMeals(fetched);
+      const fetched = await getMealSuggestions(ingredients);
+      setMeals(fetched.meals);
+      setSuggestedIngredients(fetched.suggestedIngredients);
+      setVegetarianOnly(fetched.isVegetarianOnly);
       setMealsLoaded(true);
-      return fetched;
+      return fetched.meals;
     } finally {
       setLoading(false);
     }
@@ -52,6 +56,32 @@ export default function SpinPage() {
             ? `${ingredients.length} ingredient${ingredients.length !== 1 ? "s" : ""} from your fridge`
             : "Add a few ingredients for smarter suggestions."}
         </p>
+        {suggestedIngredients.length > 0 && (
+          <div className="mt-4 rounded-2xl bg-white shadow-sm p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Plus size={16} color="hsl(145 30% 42%)" />
+              <p className="text-[13px] font-semibold tracking-[-0.01em]" style={{ color: "#332F2B" }}>
+                Add one of these for more options
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {suggestedIngredients.map((ingredient) => (
+                <span
+                  key={ingredient}
+                  className="h-8 px-3 rounded-full text-[13px] font-medium flex items-center"
+                  style={{ background: "#EEF6F1", color: "hsl(145 30% 42%)" }}
+                >
+                  {ingredient}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+        {vegetarianOnly && (
+          <p className="mt-3 text-[13px]" style={{ color: "#9E9790" }}>
+            Meat-free ingredients detected — only vegetarian meal options are shown.
+          </p>
+        )}
       </div>
 
       {loading ? (

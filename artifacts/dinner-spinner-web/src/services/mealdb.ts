@@ -56,6 +56,12 @@ export interface MealSummary {
   strMealThumb: string;
 }
 
+export interface MealSuggestionResult {
+  meals: MealSummary[];
+  suggestedIngredients: string[];
+  isVegetarianOnly: boolean;
+}
+
 export function getMealIngredients(meal: Meal): { ingredient: string; measure: string }[] {
   const result: { ingredient: string; measure: string }[] = [];
   for (let i = 1; i <= 20; i++) {
@@ -133,6 +139,97 @@ export async function getMealsMatchingFridgeIngredients(ingredients: string[]): 
       );
     })
     .map((meal) => ({ idMeal: meal.idMeal, strMeal: meal.strMeal, strMealThumb: meal.strMealThumb }));
+}
+
+const VEGETARIAN_CATEGORIES = new Set([
+  "Chicken",
+  "Beef",
+  "Goat",
+  "Lamb",
+  "Pork",
+  "Duck",
+  "Turkey",
+  "Venison",
+  "Lamb",
+  "Cumin",
+]);
+
+function hasMeatIngredient(meal: Meal) {
+  const ingredients = getMealIngredients(meal).map(({ ingredient }) => normalizeIngredient(ingredient));
+  return ingredients.some((ingredient) =>
+    [
+      "chicken",
+      "beef",
+      "pork",
+      "lamb",
+      "goat",
+      "turkey",
+      "duck",
+      "bacon",
+      "ham",
+      "sausage",
+      "fish",
+      "salmon",
+      "tuna",
+      "shrimp",
+      "prawn",
+      "anchovy",
+      "meat",
+    ].some((meat) => ingredient.includes(meat))
+  );
+}
+
+function buildSuggestedIngredients(ingredients: string[], meals: Meal[]): string[] {
+  const counts = new Map<string, number>();
+  const fridge = new Set(ingredients.map(normalizeIngredient));
+
+  for (const meal of meals) {
+    for (const { ingredient } of getMealIngredients(meal)) {
+      const normalized = normalizeIngredient(ingredient);
+      if (!normalized || fridge.has(normalized)) continue;
+      counts.set(normalized, (counts.get(normalized) ?? 0) + 1);
+    }
+  }
+
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .slice(0, 4)
+    .map(([ingredient]) => ingredient);
+}
+
+export async function getMealSuggestions(ingredients: string[]): Promise<MealSuggestionResult> {
+  const candidateMeals = await getMealsMatchingFridgeIngredients(ingredients);
+  const detailedMeals = await Promise.all(candidateMeals.map((meal) => getMealById(meal.idMeal)));
+  const meals = detailedMeals.filter((meal): meal is Meal => !!meal);
+  const hasMeat = meals.some(hasMeatIngredient);
+  const isVegetarianOnly = !ingredients.some((ingredient) =>
+    [
+      "chicken",
+      "beef",
+      "pork",
+      "lamb",
+      "goat",
+      "turkey",
+      "duck",
+      "bacon",
+      "ham",
+      "sausage",
+      "fish",
+      "salmon",
+      "tuna",
+      "shrimp",
+      "prawn",
+      "anchovy",
+      "meat",
+    ].some((meat) => normalizeIngredient(ingredient).includes(meat))
+  );
+
+  const filteredMeals = isVegetarianOnly ? meals.filter((meal) => !hasMeatIngredient(meal)) : meals;
+  return {
+    meals: filteredMeals.map((meal) => ({ idMeal: meal.idMeal, strMeal: meal.strMeal, strMealThumb: meal.strMealThumb })),
+    suggestedIngredients: buildSuggestedIngredients(ingredients, filteredMeals),
+    isVegetarianOnly,
+  };
 }
 
 export async function getRandomMeals(count: number): Promise<MealSummary[]> {
