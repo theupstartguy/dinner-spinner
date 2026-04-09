@@ -38,6 +38,14 @@ export default function IngredientsPage() {
       const data = JSON.parse(text) as { url?: string };
       console.debug("[stripe-checkout] parsed", data);
       if (!data?.url) throw new Error("Checkout unavailable right now.");
+      if (data.url.startsWith("http")) {
+        window.location.href = data.url;
+        return;
+      }
+      if (data.url.includes("payment=success")) {
+        window.location.href = data.url;
+        return;
+      }
       window.location.href = data.url;
     } catch (error) {
       console.error("[stripe-checkout] failed", error);
