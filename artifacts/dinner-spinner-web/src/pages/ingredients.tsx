@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Plus, CreditCard } from "lucide-react";
+import { X, Plus } from "lucide-react";
 import { useIngredients } from "@/context/IngredientsContext";
 
 export default function IngredientsPage() {
   const { ingredients, addIngredient, removeIngredient, clearIngredients } = useIngredients();
   const [input, setInput] = useState("");
-  const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
   const handleAdd = () => {
     if (input.trim()) {
@@ -17,40 +16,6 @@ export default function IngredientsPage() {
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") handleAdd();
-  };
-
-  const handleCheckout = async () => {
-    setCheckoutError(null);
-    const endpoint = "/api/create-checkout-session";
-    console.debug("[stripe-checkout] starting", { endpoint });
-    try {
-      const res = await fetch(endpoint, { method: "POST" });
-      const contentType = res.headers.get("content-type") ?? "";
-      const text = await res.text();
-      console.debug("[stripe-checkout] response", {
-        ok: res.ok,
-        status: res.status,
-        contentType,
-        preview: text.slice(0, 200),
-      });
-      if (!res.ok) throw new Error("Checkout unavailable right now.");
-      if (!contentType.includes("application/json")) throw new Error("Checkout unavailable right now.");
-      const data = JSON.parse(text) as { url?: string };
-      console.debug("[stripe-checkout] parsed", data);
-      if (!data?.url) throw new Error("Checkout unavailable right now.");
-      if (data.url.startsWith("http")) {
-        window.location.href = data.url;
-        return;
-      }
-      if (data.url.includes("payment=success")) {
-        window.location.href = data.url;
-        return;
-      }
-      window.location.href = data.url;
-    } catch (error) {
-      console.error("[stripe-checkout] failed", error);
-      setCheckoutError("Payment is temporarily unavailable.");
-    }
   };
 
   return (
@@ -127,20 +92,6 @@ export default function IngredientsPage() {
               Clear all ingredients
             </button>
           </>
-        )}
-
-        <button
-          onClick={handleCheckout}
-          className="mt-4 h-12 w-full rounded-xl text-white font-semibold text-sm transition-transform duration-150 ease-out active:scale-[0.97] inline-flex items-center justify-center gap-2"
-          style={{ background: "hsl(145 30% 42%)" }}
-        >
-          <CreditCard size={16} />
-          Upgrade with Stripe
-        </button>
-        {checkoutError && (
-          <p className="mt-2 text-sm" style={{ color: "#CC7A55" }}>
-            {checkoutError}
-          </p>
         )}
       </div>
     </div>
