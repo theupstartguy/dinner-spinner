@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import SpinnerWheel from "@/components/SpinnerWheel";
 import { useIngredients } from "@/context/IngredientsContext";
-import { getMealsByIngredients, MealSummary } from "@/services/mealdb";
+import { getMealsMatchingFridgeIngredients, MealSummary } from "@/services/mealdb";
 import { Clock3, Heart, Leaf } from "lucide-react";
 
 export default function SpinPage() {
@@ -18,7 +18,7 @@ export default function SpinPage() {
     if (mealsLoaded && !force) return meals;
     setLoading(true);
     try {
-      const fetched = await getMealsByIngredients(ingredients);
+      const fetched = await getMealsMatchingFridgeIngredients(ingredients);
       setMeals(fetched);
       setMealsLoaded(true);
       return fetched;

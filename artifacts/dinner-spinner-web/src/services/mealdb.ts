@@ -74,6 +74,26 @@ export function getYouTubeVideoId(url: string): string | null {
   return match ? match[1] : null;
 }
 
+function normalizeIngredient(value: string) {
+  return value.trim().toLowerCase();
+}
+
+function ingredientTokens(value: string) {
+  return normalizeIngredient(value)
+    .split(/[\s,/-]+/)
+    .filter(Boolean);
+}
+
+function matchesFridgeIngredient(mealIngredient: string, fridgeIngredient: string) {
+  const mealNorm = normalizeIngredient(mealIngredient);
+  const fridgeNorm = normalizeIngredient(fridgeIngredient);
+  if (!mealNorm || !fridgeNorm) return false;
+  if (mealNorm === fridgeNorm) return true;
+  const mealTokens = ingredientTokens(mealNorm);
+  const fridgeTokens = ingredientTokens(fridgeNorm);
+  return mealTokens.some((token) => fridgeTokens.includes(token)) || fridgeTokens.some((token) => mealTokens.includes(token));
+}
+
 export async function searchMealsByIngredient(ingredient: string): Promise<MealSummary[]> {
   const res = await fetch(`${BASE}/filter.php?i=${encodeURIComponent(ingredient)}`);
   const data = await res.json();
@@ -97,6 +117,22 @@ export async function getMealsByIngredients(ingredients: string[]): Promise<Meal
     (a, b) => (idCounts.get(b.idMeal) ?? 0) - (idCounts.get(a.idMeal) ?? 0)
   );
   return sorted.slice(0, 8);
+}
+
+export async function getMealsMatchingFridgeIngredients(ingredients: string[]): Promise<MealSummary[]> {
+  const candidateMeals = await getMealsByIngredients(ingredients);
+  if (ingredients.length === 0) return candidateMeals;
+
+  const detailedMeals = await Promise.all(candidateMeals.map((meal) => getMealById(meal.idMeal)));
+  return detailedMeals
+    .filter((meal): meal is Meal => !!meal)
+    .filter((meal) => {
+      const mealIngredients = getMealIngredients(meal).map(({ ingredient }) => ingredient);
+      return mealIngredients.every((mealIngredient) =>
+        ingredients.some((fridgeIngredient) => matchesFridgeIngredient(mealIngredient, fridgeIngredient))
+      );
+    })
+    .map((meal) => ({ idMeal: meal.idMeal, strMeal: meal.strMeal, strMealThumb: meal.strMealThumb }));
 }
 
 export async function getRandomMeals(count: number): Promise<MealSummary[]> {
