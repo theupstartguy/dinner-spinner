@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Dinner Spinner"
+version = "1.0.0"
+id = "artifacts/dinner-spinner-web"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 21508
+
+[services.development]
+run = "pnpm --filter @workspace/dinner-spinner-web run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/dinner-spinner-web", "run", "build" ]
+publicDir = "artifacts/dinner-spinner-web/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "21508"
+BASE_PATH = "/"
