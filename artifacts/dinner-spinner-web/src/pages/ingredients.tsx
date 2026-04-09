@@ -38,7 +38,8 @@ export default function IngredientsPage() {
       if (!res.ok || !data.url) {
         throw new Error(data.error ?? "Could not start checkout");
       }
-      window.location.href = data.url;
+      window.open(data.url, "_blank", "noopener,noreferrer");
+      setCheckoutLoading(false);
     } catch (err) {
       setCheckoutError(err instanceof Error ? err.message : "Something went wrong");
       setCheckoutLoading(false);
