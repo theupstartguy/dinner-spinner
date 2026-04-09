@@ -64,9 +64,12 @@ router.post("/analyze-fridge", async (req, res) => {
 
 router.post("/create-checkout-session", async (req, res) => {
   if (!stripe) {
-    res.status(500).json({ error: "Stripe is not configured" });
+    res.status(500).json({ error: "Stripe is not configured. Please add your STRIPE_SECRET_KEY." });
     return;
   }
+
+  const devDomain = process.env.REPLIT_DEV_DOMAIN;
+  const baseUrl = devDomain ? `https://${devDomain}` : `${req.protocol}://${req.get("host")}`;
 
   try {
     const session = await stripe.checkout.sessions.create({
@@ -77,20 +80,22 @@ router.post("/create-checkout-session", async (req, res) => {
           price_data: {
             currency: "usd",
             product_data: {
-              name: "Dinner Spinner Test Meal Plan",
+              name: "FridgeFresh Pro",
+              description: "Unlimited AI fridge scans, smart meal suggestions, and premium recipes.",
+              images: [],
             },
-            unit_amount: 199,
+            unit_amount: 499,
           },
           quantity: 1,
         },
       ],
-      success_url: `${req.protocol}://${req.get("host")}/?paid=1`,
-      cancel_url: `${req.protocol}://${req.get("host")}/ingredients?canceled=1`,
+      success_url: `${baseUrl}/ingredients?payment=success`,
+      cancel_url: `${baseUrl}/ingredients?payment=canceled`,
     });
 
     res.json({ url: session.url });
   } catch (err) {
-    req.log.error({ err }, "Failed to create checkout session");
+    req.log.error({ err }, "Failed to create Stripe checkout session");
     res.status(500).json({ error: "Failed to create checkout session" });
   }
 });
