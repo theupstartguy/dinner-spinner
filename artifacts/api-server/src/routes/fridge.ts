@@ -1,7 +1,10 @@
 import { Router, type IRouter } from "express";
 import { openai } from "@workspace/integrations-openai-ai-server";
+import Stripe from "stripe";
 
 const router: IRouter = Router();
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+const stripe = stripeSecretKey ? new Stripe(stripeSecretKey) : null;
 
 router.post("/analyze-fridge", async (req, res) => {
   const { imageBase64, mimeType } = req.body;
@@ -56,6 +59,39 @@ router.post("/analyze-fridge", async (req, res) => {
   } catch (err) {
     req.log.error({ err }, "Failed to analyze fridge image");
     res.status(500).json({ error: "Failed to analyze image" });
+  }
+});
+
+router.post("/create-checkout-session", async (req, res) => {
+  if (!stripe) {
+    res.status(500).json({ error: "Stripe is not configured" });
+    return;
+  }
+
+  try {
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: "Dinner Spinner Test Meal Plan",
+            },
+            unit_amount: 199,
+          },
+          quantity: 1,
+        },
+      ],
+      success_url: `${req.protocol}://${req.get("host")}/?paid=1`,
+      cancel_url: `${req.protocol}://${req.get("host")}/ingredients?canceled=1`,
+    });
+
+    res.json({ url: session.url });
+  } catch (err) {
+    req.log.error({ err }, "Failed to create checkout session");
+    res.status(500).json({ error: "Failed to create checkout session" });
   }
 });
 
