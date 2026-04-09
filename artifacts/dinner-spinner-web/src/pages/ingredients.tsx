@@ -21,7 +21,15 @@ export default function IngredientsPage() {
 
   const handleCheckout = async () => {
     setCheckoutError(null);
-    window.location.href = "/ingredients?payment=success";
+    try {
+      const res = await fetch("/api/create-checkout-session", { method: "POST" });
+      if (!res.ok) throw new Error("Checkout unavailable right now.");
+      const data = await res.json();
+      if (!data?.url) throw new Error("Checkout unavailable right now.");
+      window.location.href = data.url;
+    } catch {
+      setCheckoutError("Payment is temporarily unavailable.");
+    }
   };
 
   return (
