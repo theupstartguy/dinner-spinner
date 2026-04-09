@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Plus } from "lucide-react";
+import { X, Plus, CreditCard } from "lucide-react";
 import { useIngredients } from "@/context/IngredientsContext";
 
 export default function IngredientsPage() {
@@ -16,6 +16,14 @@ export default function IngredientsPage() {
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") handleAdd();
+  };
+
+  const handleCheckout = async () => {
+    const res = await fetch("/api/stripe/create-checkout-session", { method: "POST" });
+    const data = await res.json();
+    if (data.url) {
+      window.location.href = data.url;
+    }
   };
 
   return (
@@ -93,6 +101,15 @@ export default function IngredientsPage() {
             </button>
           </>
         )}
+
+        <button
+          onClick={handleCheckout}
+          className="mt-4 h-12 w-full rounded-xl text-white font-semibold text-sm transition-transform duration-150 ease-out active:scale-[0.97] inline-flex items-center justify-center gap-2"
+          style={{ background: "hsl(145 30% 42%)" }}
+        >
+          <CreditCard size={16} />
+          Upgrade with Stripe
+        </button>
       </div>
     </div>
   );
