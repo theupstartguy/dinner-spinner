@@ -6,6 +6,7 @@ import { useIngredients } from "@/context/IngredientsContext";
 export default function IngredientsPage() {
   const { ingredients, addIngredient, removeIngredient, clearIngredients } = useIngredients();
   const [input, setInput] = useState("");
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
   const handleAdd = () => {
     if (input.trim()) {
@@ -19,10 +20,20 @@ export default function IngredientsPage() {
   };
 
   const handleCheckout = async () => {
-    const res = await fetch("/api/stripe/create-checkout-session", { method: "POST" });
-    const data = await res.json();
-    if (data.url) {
-      window.location.href = data.url;
+    setCheckoutError(null);
+    try {
+      const res = await fetch("/api/stripe/create-checkout-session", { method: "POST" });
+      const contentType = res.headers.get("content-type") ?? "";
+      if (!res.ok) throw new Error("Checkout unavailable right now.");
+      if (!contentType.includes("application/json")) throw new Error("Checkout unavailable right now.");
+      const data = await res.json();
+      if (data?.url) {
+        window.location.href = data.url;
+        return;
+      }
+      throw new Error("Checkout unavailable right now.");
+    } catch {
+      setCheckoutError("Payment is temporarily unavailable.");
     }
   };
 
@@ -110,6 +121,11 @@ export default function IngredientsPage() {
           <CreditCard size={16} />
           Upgrade with Stripe
         </button>
+        {checkoutError && (
+          <p className="mt-2 text-sm" style={{ color: "#CC7A55" }}>
+            {checkoutError}
+          </p>
+        )}
       </div>
     </div>
   );
