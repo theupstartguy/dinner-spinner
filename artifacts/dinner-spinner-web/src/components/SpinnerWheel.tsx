@@ -2,7 +2,10 @@ import { useRef, useState } from "react";
 import { motion, useAnimation } from "framer-motion";
 import { Shuffle } from "lucide-react";
 
-const SEGMENT_COLORS = ["#4B8B6E", "#CC7A55", "#D7E7DB", "#FAEEE8"];
+const SEGMENT_COLORS = [
+  "#4B8B6E", "#CC7A55", "#7DB89A", "#E8A81C",
+  "#3A6B55", "#D9895F", "#93C5AC", "#F2C55C",
+];
 
 interface SpinnerWheelProps {
   items: string[];
@@ -53,7 +56,6 @@ export default function SpinnerWheel({ items, onResult }: SpinnerWheelProps) {
     const labelAngle = startAngle + 360 / count / 2;
     const labelR = r * 0.62;
     const labelPos = polarToCartesian(cx, cy, labelR, labelAngle);
-    const words = item.split(" ");
     const maxChars = 10;
     const truncated = item.length > maxChars ? item.slice(0, maxChars) + "…" : item;
 
@@ -64,50 +66,57 @@ export default function SpinnerWheel({ items, onResult }: SpinnerWheelProps) {
     <div className="flex flex-col items-center gap-6">
       <div className="relative" style={{ width: size, height: size }}>
         <div
-          className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1 z-20"
-          style={{ width: 0, height: 0, borderLeft: "12px solid transparent", borderRight: "12px solid transparent", borderTop: "24px solid #1a1a1a" }}
+          className="absolute top-0 left-1/2 -translate-x-1/2 z-20"
+          style={{
+            width: 0,
+            height: 0,
+            borderLeft: "10px solid transparent",
+            borderRight: "10px solid transparent",
+            borderTop: "22px solid #332F2B",
+            marginTop: "-2px",
+          }}
         />
         <motion.svg
           width={size}
           height={size}
           animate={controls}
           style={{ originX: "50%", originY: "50%" }}
-          className="drop-shadow-xl"
+          className="drop-shadow-lg"
         >
           {count === 0 ? (
-            <circle cx={cx} cy={cy} r={r} fill="#e5e7eb" />
+            <circle cx={cx} cy={cy} r={r} fill="#EDEBE8" />
           ) : (
             segments.map((seg, i) => (
               <g key={i}>
-                <path d={seg.path} fill={seg.color} stroke="white" strokeWidth={2} />
+                <path d={seg.path} fill={seg.color} stroke="rgba(255,255,255,0.6)" strokeWidth={1.5} />
                 <text
                   x={seg.labelPos.x}
                   y={seg.labelPos.y}
                   fill="white"
                   fontSize={count > 6 ? 9 : 11}
-                  fontWeight="700"
-                  fontFamily="Inter, sans-serif"
+                  fontWeight="600"
+                  fontFamily="Inter, system-ui, sans-serif"
                   textAnchor="middle"
                   dominantBaseline="middle"
                   transform={`rotate(${seg.labelAngle + 90}, ${seg.labelPos.x}, ${seg.labelPos.y})`}
-                  style={{ textShadow: "0 1px 3px rgba(0,0,0,0.4)", pointerEvents: "none" }}
+                  style={{ pointerEvents: "none" }}
                 >
                   {seg.label}
                 </text>
               </g>
             ))
           )}
-          <circle cx={cx} cy={cy} r={18} fill="white" stroke="#EDEBE8" strokeWidth={2} />
+          <circle cx={cx} cy={cy} r={20} fill="white" stroke="#EDEBE8" strokeWidth={2} />
         </motion.svg>
       </div>
 
       <button
         onClick={spin}
         disabled={isSpinning || count === 0}
-        className="h-12 min-w-[220px] px-6 rounded-xl text-white font-semibold text-base shadow-md transition-transform duration-150 ease-out active:scale-[0.97] disabled:opacity-50 disabled:active:scale-100 inline-flex items-center justify-center gap-2"
-        style={{ background: isSpinning || count === 0 ? "hsl(30 8% 80%)" : "hsl(145 30% 42%)" }}
+        className="h-12 min-w-[240px] px-6 rounded-xl text-white font-semibold text-[15px] shadow-sm transition-transform duration-150 ease-out active:scale-[0.97] disabled:opacity-50 disabled:active:scale-100 inline-flex items-center justify-center gap-2"
+        style={{ background: isSpinning || count === 0 ? "#EDEBE8" : "hsl(145 30% 42%)" }}
       >
-        <Shuffle size={18} />
+        <Shuffle size={17} />
         {isSpinning ? "Spinning…" : count === 0 ? "Add ingredients first" : "Show me what I can make"}
       </button>
     </div>

@@ -14,8 +14,8 @@ export default function SpinPage() {
   const [result, setResult] = useState<MealSummary | null>(null);
   const [mealsLoaded, setMealsLoaded] = useState(false);
 
-  const loadMeals = async () => {
-    if (mealsLoaded) return meals;
+  const loadMeals = async (force = false) => {
+    if (mealsLoaded && !force) return meals;
     setLoading(true);
     try {
       const fetched = await getMealsByIngredients(ingredients);
@@ -56,7 +56,7 @@ export default function SpinPage() {
 
       {loading ? (
         <div className="flex flex-col items-center justify-center pt-20 gap-4">
-          <div className="w-14 h-14 rounded-full border-4 border-green-100 border-t-green-700 animate-spin" />
+          <div className="w-14 h-14 rounded-full border-4 animate-spin" style={{ borderColor: "#EEF6F1", borderTopColor: "hsl(145 30% 42%)" }} />
           <p className="text-sm font-medium" style={{ color: "#9E9790" }}>Finding fresh ideas…</p>
         </div>
       ) : (
@@ -98,7 +98,7 @@ export default function SpinPage() {
                 )}
               </AnimatePresence>
               <button
-                onClick={() => { setMealsLoaded(false); setResult(null); loadMeals(); }}
+                onClick={() => { setResult(null); loadMeals(true); }}
                 className="mt-4 text-sm font-medium underline"
                 style={{ color: "hsl(145 30% 42%)" }}
               >

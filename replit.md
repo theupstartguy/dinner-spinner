@@ -4,9 +4,32 @@
 
 pnpm workspace monorepo using TypeScript. Each package manages its own dependencies.
 
+## Brand — FridgeFresh
+
+- **Primary:** Sage green `hsl(145 30% 42%)` / `#4B8B6E`
+- **Background:** Warm cream `#FAF8F5`
+- **Accent:** Terracotta `#CC7A55`
+- **Text:** Charcoal `#332F2B`, Muted `#9E9790`
+- **Sage tint:** `#EEF6F1`
+- **Font:** Inter (400/500/600/700) loaded from Google Fonts
+- **Buttons:** `h-12 rounded-xl font-semibold active:scale-[0.97]` with sage background
+- **Cards:** `bg-white rounded-2xl shadow-sm`
+- **Max layout width:** 480px on all pages
+
 ## Apps
 
-### Dinner Spinner (`artifacts/dinner-spinner`)
+### Dinner Spinner Web (`artifacts/dinner-spinner-web`)
+- React + Vite web app at previewPath `/`
+- Pages: `/` (Spin), `/ingredients` (Fridge), `/scan` (AI Scan), `/recipe/:id` (Recipe Detail)
+- `IngredientsContext` persists ingredients to `localStorage` key `dinner-spinner-ingredients`
+- TheMealDB API called directly from frontend (`services/mealdb.ts`)
+- AI fridge scan: POST `/api/analyze-fridge` (proxied to Express API server at port 8080)
+- Animated SVG spinner wheel (`SpinnerWheel.tsx`) using framer-motion
+- Segment colors: `["#4B8B6E","#CC7A55","#7DB89A","#E8A81C","#3A6B55","#D9895F","#93C5AC","#F2C55C"]`
+- BottomNav: Lucide icons (ChefHat, Refrigerator, ScanLine); active tab in sage green
+- Fully branded per FridgeFresh guidelines
+
+### Dinner Spinner Mobile (`artifacts/dinner-spinner`)
 - Expo React Native mobile app
 - Tab 1 (Spin): Animated spinner wheel → suggests meals based on ingredients via TheMealDB API
 - Tab 2 (Ingredients): Add ingredients manually or tap "Scan" to take/upload a fridge photo
