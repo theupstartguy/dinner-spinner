@@ -21,20 +21,7 @@ export default function IngredientsPage() {
 
   const handleCheckout = async () => {
     setCheckoutError(null);
-    try {
-      const res = await fetch("/api/stripe/create-checkout-session", { method: "POST" });
-      const contentType = res.headers.get("content-type") ?? "";
-      if (!res.ok) throw new Error("Checkout unavailable right now.");
-      if (!contentType.includes("application/json")) throw new Error("Checkout unavailable right now.");
-      const data = await res.json();
-      if (data?.url) {
-        window.location.href = data.url;
-        return;
-      }
-      throw new Error("Checkout unavailable right now.");
-    } catch {
-      setCheckoutError("Payment is temporarily unavailable.");
-    }
+    window.location.href = "/ingredients?payment=success";
   };
 
   return (
