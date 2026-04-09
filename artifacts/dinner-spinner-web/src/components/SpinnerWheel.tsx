@@ -1,10 +1,8 @@
 import { useRef, useState } from "react";
 import { motion, useAnimation } from "framer-motion";
+import { Shuffle } from "lucide-react";
 
-const SEGMENT_COLORS = [
-  "#FF6B35", "#FF8C42", "#F7C59F", "#EFEFD0",
-  "#004E89", "#1A936F", "#C3423F", "#E84855",
-];
+const SEGMENT_COLORS = ["#4B8B6E", "#CC7A55", "#D7E7DB", "#FAEEE8"];
 
 interface SpinnerWheelProps {
   items: string[];
@@ -99,17 +97,18 @@ export default function SpinnerWheel({ items, onResult }: SpinnerWheelProps) {
               </g>
             ))
           )}
-          <circle cx={cx} cy={cy} r={18} fill="white" stroke="#e5e7eb" strokeWidth={2} />
+          <circle cx={cx} cy={cy} r={18} fill="white" stroke="#EDEBE8" strokeWidth={2} />
         </motion.svg>
       </div>
 
       <button
         onClick={spin}
         disabled={isSpinning || count === 0}
-        className="px-10 py-3.5 rounded-full text-white font-bold text-lg shadow-lg transition-all active:scale-95 disabled:opacity-50"
-        style={{ background: isSpinning || count === 0 ? "#ccc" : "linear-gradient(135deg, #FF6B35 0%, #FF8C42 100%)" }}
+        className="h-12 min-w-[220px] px-6 rounded-xl text-white font-semibold text-base shadow-md transition-transform duration-150 ease-out active:scale-[0.97] disabled:opacity-50 disabled:active:scale-100 inline-flex items-center justify-center gap-2"
+        style={{ background: isSpinning || count === 0 ? "hsl(30 8% 80%)" : "hsl(145 30% 42%)" }}
       >
-        {isSpinning ? "Spinning…" : count === 0 ? "Add ingredients first" : "Spin!"}
+        <Shuffle size={18} />
+        {isSpinning ? "Spinning…" : count === 0 ? "Add ingredients first" : "Show me what I can make"}
       </button>
     </div>
   );

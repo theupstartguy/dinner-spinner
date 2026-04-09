@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import SpinnerWheel from "@/components/SpinnerWheel";
 import { useIngredients } from "@/context/IngredientsContext";
 import { getMealsByIngredients, MealSummary } from "@/services/mealdb";
+import { Clock3, Heart, Leaf } from "lucide-react";
 
 export default function SpinPage() {
   const { ingredients } = useIngredients();
@@ -38,25 +39,28 @@ export default function SpinPage() {
   const wheelItems = meals.map((m) => m.strMeal);
 
   return (
-    <div className="min-h-screen pb-20" style={{ background: "#FAFAF8" }}>
-      <div className="px-5 pt-12 pb-4">
-        <h1 className="text-3xl font-extrabold" style={{ color: "#1a1a1a" }}>
-          🍽️ Dinner Spinner
+    <div className="min-h-screen pb-24" style={{ background: "#FAF8F5" }}>
+      <div className="mx-auto max-w-[480px] px-5 pt-12 pb-4">
+        <p className="text-[11px] font-medium uppercase tracking-[0.08em]" style={{ color: "#9E9790" }}>
+          Fresh picks
+        </p>
+        <h1 className="mt-2 text-[28px] font-bold leading-[1.3] tracking-[-0.015em]" style={{ color: "#332F2B" }}>
+          Let’s see what we can make
         </h1>
-        <p className="text-sm mt-1" style={{ color: "#6b7280" }}>
+        <p className="text-sm mt-2" style={{ color: "#9E9790" }}>
           {ingredients.length > 0
-            ? `Using ${ingredients.length} ingredient${ingredients.length !== 1 ? "s" : ""}`
-            : "Spinning random meals — add ingredients for better matches!"}
+            ? `${ingredients.length} ingredient${ingredients.length !== 1 ? "s" : ""} from your fridge`
+            : "Add a few ingredients for smarter suggestions."}
         </p>
       </div>
 
       {loading ? (
         <div className="flex flex-col items-center justify-center pt-20 gap-4">
-          <div className="w-16 h-16 rounded-full border-4 border-orange-200 border-t-orange-500 animate-spin" />
-          <p className="text-gray-500 font-medium">Finding meals…</p>
+          <div className="w-14 h-14 rounded-full border-4 border-green-100 border-t-green-700 animate-spin" />
+          <p className="text-sm font-medium" style={{ color: "#9E9790" }}>Finding fresh ideas…</p>
         </div>
       ) : (
-        <div className="flex flex-col items-center px-4">
+        <div className="mx-auto flex max-w-[480px] flex-col items-center px-5">
           {mealsLoaded || meals.length > 0 ? (
             <>
               <SpinnerWheel items={wheelItems} onResult={handleResult} />
@@ -66,21 +70,28 @@ export default function SpinPage() {
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 30 }}
-                    className="mt-8 w-full max-w-sm rounded-2xl overflow-hidden shadow-lg bg-white"
+                    className="mt-8 w-full rounded-2xl overflow-hidden bg-white shadow-sm"
                   >
                     <img
                       src={result.strMealThumb}
                       alt={result.strMeal}
                       className="w-full h-44 object-cover"
                     />
-                    <div className="p-4">
-                      <h2 className="text-xl font-bold text-gray-900">{result.strMeal}</h2>
+                    <div className="p-5">
+                      <div className="flex items-start justify-between gap-3">
+                        <h2 className="text-[18px] font-semibold leading-[1.4] tracking-[-0.01em]" style={{ color: "#332F2B" }}>{result.strMeal}</h2>
+                        <Heart size={18} style={{ color: "#9E9790" }} />
+                      </div>
+                      <div className="mt-3 flex items-center gap-4 text-sm" style={{ color: "#9E9790" }}>
+                        <span className="inline-flex items-center gap-1"><Clock3 size={14} /> Quick pick</span>
+                        <span className="inline-flex items-center gap-1"><Leaf size={14} /> Fresh match</span>
+                      </div>
                       <button
                         onClick={() => navigate(`/recipe/${result.idMeal}`)}
-                        className="mt-3 w-full py-2.5 rounded-xl text-white font-semibold text-sm transition-all active:scale-95"
-                        style={{ background: "linear-gradient(135deg, #FF6B35 0%, #FF8C42 100%)" }}
+                        className="mt-4 h-12 w-full rounded-xl text-white font-semibold text-sm transition-transform duration-150 ease-out active:scale-[0.97]"
+                        style={{ background: "hsl(145 30% 42%)" }}
                       >
-                        View Recipe →
+                        View Recipe
                       </button>
                     </div>
                   </motion.div>
@@ -89,26 +100,26 @@ export default function SpinPage() {
               <button
                 onClick={() => { setMealsLoaded(false); setResult(null); loadMeals(); }}
                 className="mt-4 text-sm font-medium underline"
-                style={{ color: "#FF6B35" }}
+                style={{ color: "hsl(145 30% 42%)" }}
               >
-                Refresh meals
+                Spin again
               </button>
             </>
           ) : (
             <div className="mt-8 flex flex-col items-center gap-5">
-              <div className="w-56 h-56 rounded-full flex items-center justify-center text-7xl"
-                style={{ background: "linear-gradient(135deg, #FF6B35 15%, #FF8C42 100%)" }}>
-                🍳
+              <div className="w-56 h-56 rounded-full flex items-center justify-center text-7xl shadow-sm"
+                style={{ background: "linear-gradient(135deg, #EEF6F1 0%, #FAEEE8 100%)" }}>
+                🥗
               </div>
-              <p className="text-center text-gray-500 max-w-xs">
-                Tap the button below to load meal suggestions, then spin the wheel!
+              <p className="text-center max-w-xs text-sm leading-6" style={{ color: "#9E9790" }}>
+                No pressure — tap below and we’ll find a fresh dinner idea.
               </p>
               <button
                 onClick={loadMeals}
-                className="px-8 py-3 rounded-full text-white font-bold text-base shadow-md transition-all active:scale-95"
-                style={{ background: "linear-gradient(135deg, #FF6B35 0%, #FF8C42 100%)" }}
+                className="h-12 px-6 rounded-xl text-white font-semibold text-base shadow-md transition-transform duration-150 ease-out active:scale-[0.97]"
+                style={{ background: "hsl(145 30% 42%)" }}
               >
-                Load Meals
+                Show me what I can make
               </button>
             </div>
           )}

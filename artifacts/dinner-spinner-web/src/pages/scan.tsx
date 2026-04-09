@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Camera, Upload, Check, X } from "lucide-react";
+import { Camera, Check, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useIngredients } from "@/context/IngredientsContext";
 
@@ -77,26 +77,29 @@ export default function ScanPage() {
   };
 
   return (
-    <div className="min-h-screen pb-24" style={{ background: "#FAFAF8" }}>
-      <div className="px-5 pt-12 pb-4">
-        <h1 className="text-3xl font-extrabold" style={{ color: "#1a1a1a" }}>Scan Your Fridge</h1>
-        <p className="text-sm mt-1" style={{ color: "#6b7280" }}>
+    <div className="min-h-screen pb-24" style={{ background: "#FAF8F5" }}>
+      <div className="mx-auto max-w-[480px] px-5 pt-12 pb-4">
+        <p className="text-[11px] font-medium uppercase tracking-[0.08em]" style={{ color: "#9E9790" }}>
+          AI vision
+        </p>
+        <h1 className="mt-2 text-[28px] font-bold leading-[1.3] tracking-[-0.015em]" style={{ color: "#332F2B" }}>Scan your fridge</h1>
+        <p className="text-sm mt-2" style={{ color: "#9E9790" }}>
           Take a photo of your fridge or pantry to auto-detect ingredients
         </p>
       </div>
 
-      <div className="px-5">
+      <div className="mx-auto max-w-[480px] px-5">
         {!preview ? (
           <div className="flex flex-col gap-4">
             <button
               onClick={() => fileRef.current?.click()}
-              className="w-full py-10 rounded-2xl border-2 border-dashed border-orange-300 bg-orange-50 flex flex-col items-center gap-3 transition-colors hover:bg-orange-100"
+              className="w-full py-10 rounded-2xl border-2 border-dashed border-[hsl(145_30%_42%)]/20 bg-[hsl(145_30%_95%)] flex flex-col items-center gap-3 transition-colors hover:bg-[hsl(145_30%_95%)]"
             >
-              <Camera size={40} style={{ color: "#FF6B35" }} />
-              <span className="text-base font-semibold" style={{ color: "#FF6B35" }}>
+              <Camera size={40} style={{ color: "hsl(145 30% 42%)" }} />
+              <span className="text-base font-semibold" style={{ color: "hsl(145 30% 42%)" }}>
                 Take or Upload a Photo
               </span>
-              <span className="text-xs text-gray-400">Tap to choose image from your device</span>
+              <span className="text-xs" style={{ color: "#9E9790" }}>Tap to choose image from your device</span>
             </button>
             <input
               ref={fileRef}
@@ -106,9 +109,9 @@ export default function ScanPage() {
               className="hidden"
               onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
             />
-            <div className="rounded-2xl bg-white border border-gray-100 shadow-sm p-4">
-              <h3 className="font-semibold text-gray-800 mb-2">How it works</h3>
-              <ul className="text-sm text-gray-500 space-y-1.5">
+            <div className="rounded-2xl bg-white shadow-sm p-5">
+              <h3 className="font-semibold mb-2" style={{ color: "#332F2B" }}>How it works</h3>
+              <ul className="text-sm space-y-1.5" style={{ color: "#9E9790" }}>
                 <li>📸 Take or upload a photo of your fridge / pantry</li>
                 <li>🤖 AI vision detects the ingredients automatically</li>
                 <li>✅ Select which ingredients to add to your list</li>
@@ -130,13 +133,13 @@ export default function ScanPage() {
 
             {scanning && (
               <div className="flex flex-col items-center gap-3 py-8">
-                <div className="w-12 h-12 rounded-full border-4 border-orange-200 border-t-orange-500 animate-spin" />
-                <p className="text-gray-500 font-medium">Analysing your fridge…</p>
+                <div className="w-12 h-12 rounded-full border-4 border-green-100 border-t-green-700 animate-spin" />
+                <p className="font-medium" style={{ color: "#9E9790" }}>Analysing your fridge…</p>
               </div>
             )}
 
             {error && (
-              <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-600 text-sm">
+              <div className="bg-red-50 rounded-xl p-4 text-sm" style={{ color: "hsl(0 65% 55%)" }}>
                 {error}
               </div>
             )}
@@ -146,24 +149,24 @@ export default function ScanPage() {
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                   {added ? (
                     <div className="flex flex-col items-center gap-3 py-8">
-                      <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center">
-                        <Check size={28} className="text-green-600" />
+                      <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ background: "#EEF6F1" }}>
+                        <Check size={28} style={{ color: "hsl(145 30% 42%)" }} />
                       </div>
-                      <p className="text-gray-700 font-semibold">
+                      <p className="font-semibold" style={{ color: "#332F2B" }}>
                         {selected.size} ingredient{selected.size !== 1 ? "s" : ""} added!
                       </p>
                       <button
                         onClick={handleReset}
-                        className="px-6 py-2.5 rounded-xl font-semibold text-sm text-white transition-all active:scale-95"
-                        style={{ background: "linear-gradient(135deg, #FF6B35 0%, #FF8C42 100%)" }}
+                        className="h-12 px-6 rounded-xl font-semibold text-sm text-white transition-transform duration-150 ease-out active:scale-[0.97]"
+                        style={{ background: "hsl(145 30% 42%)" }}
                       >
                         Scan another photo
                       </button>
                     </div>
                   ) : (
                     <>
-                      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-                        <h3 className="font-bold text-gray-900 mb-3">
+                      <div className="bg-white rounded-2xl shadow-sm p-5">
+                        <h3 className="font-semibold mb-3" style={{ color: "#332F2B" }}>
                           Found {results.length} ingredient{results.length !== 1 ? "s" : ""}
                         </h3>
                         <div className="flex flex-wrap gap-2 mb-4">
@@ -171,11 +174,11 @@ export default function ScanPage() {
                             <button
                               key={ing}
                               onClick={() => toggleIngredient(ing)}
-                              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border transition-all"
+                              className="h-9 flex items-center gap-1.5 px-3 rounded-full text-sm font-medium border transition-all"
                               style={
                                 selected.has(ing)
-                                  ? { background: "#FFF3EE", borderColor: "#FF6B35", color: "#FF6B35" }
-                                  : { background: "#f9fafb", borderColor: "#e5e7eb", color: "#9ca3af" }
+                                  ? { background: "#EEF6F1", borderColor: "hsl(145 30% 42%)", color: "hsl(145 30% 42%)" }
+                                  : { background: "#FAF8F5", borderColor: "#EDEBE8", color: "#9E9790" }
                               }
                             >
                               {selected.has(ing) ? <Check size={12} /> : <X size={12} />}
@@ -186,8 +189,8 @@ export default function ScanPage() {
                         <button
                           onClick={handleAdd}
                           disabled={selected.size === 0}
-                          className="w-full py-2.5 rounded-xl text-white font-semibold disabled:opacity-40 transition-all active:scale-95"
-                          style={{ background: "linear-gradient(135deg, #FF6B35 0%, #FF8C42 100%)" }}
+                          className="h-12 w-full rounded-xl text-white font-semibold disabled:opacity-40 transition-transform duration-150 ease-out active:scale-[0.97]"
+                          style={{ background: "hsl(145 30% 42%)" }}
                         >
                           Add {selected.size} selected ingredient{selected.size !== 1 ? "s" : ""}
                         </button>
